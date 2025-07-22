@@ -1,38 +1,67 @@
 const MenuItem = require("../models/menuItem");
 
-// GET /menu-items
 exports.getAllMenuItems = async (req, res) => {
   try {
-    const items = await MenuItem.find().populate("restaurant");
+    const queryObj = { ...req.query };
+    const exclude = ["select", "sort", "page", "limit"];
+    exclude.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(
+      /\b(gt|gte|lt|lte|in)\b/g,
+      (match) => `$${match}`
+    );
+    const filters = JSON.parse(queryStr);
+
+    let query = MenuItem.find(filters).populate("restaurant");
+
+    if (req.query.select) {
+      const fields = req.query.select.split(",").join(" ");
+      query = query.select(fields);
+    }
+
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("availableOn");
+    }
+
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 25;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+
+    const items = await query;
     res.status(200).json(items);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// GET /menu-items/:id
+// GET
 exports.getMenuItemById = async (req, res) => {
   try {
     const item = await MenuItem.findById(req.params.id).populate("restaurant");
     if (!item) return res.status(404).json({ error: "Not found" });
     res.status(200).json(item);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// POST /menu-items
+// POST
 exports.createMenuItem = async (req, res) => {
   try {
     const newItem = new MenuItem(req.body);
     await newItem.save();
     res.status(201).json(newItem);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
 
-// PUT /menu-items/:id
+// PUT
 exports.updateMenuItem = async (req, res) => {
   try {
     const updated = await MenuItem.findByIdAndUpdate(
@@ -42,18 +71,18 @@ exports.updateMenuItem = async (req, res) => {
     );
     if (!updated) return res.status(404).json({ error: "Not found" });
     res.status(200).json(updated);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
 
-// DELETE /menu-items/:id
+// DELETE
 exports.deleteMenuItem = async (req, res) => {
   try {
     const deleted = await MenuItem.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ error: "Not found" });
     res.status(200).json({ message: "Deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

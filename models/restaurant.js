@@ -14,6 +14,19 @@ const restaurantSchema = new mongoose.Schema({
   phone: {
     type: String,
   },
+  rating: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 5,
+    default: 0,
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0,
+  },
   isOpen: {
     type: Boolean,
     default: true,
