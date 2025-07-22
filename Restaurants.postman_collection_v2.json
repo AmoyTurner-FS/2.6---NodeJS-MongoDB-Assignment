@@ -38,6 +38,16 @@
 						"type": "text/javascript",
 						"packages": {}
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
 				}
 			],
 			"request": {
@@ -45,7 +55,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"name\": \"Test Cafe\",\n  \"address\": \"123 Main St\",\n  \"phone\": \"555-1234\",\n  \"isOpen\": true\n}\n",
+					"raw": "{\n  \"name\": \"Seafood Shack\",\n  \"rating\": 2,\n  \"price\": 10,\n  \"address\": \"505 Ocean Blvd\"\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -259,6 +269,14 @@
 						"{{restId}}"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "all restaurants with range filter",
+			"request": {
+				"method": "GET",
+				"header": []
 			},
 			"response": []
 		}

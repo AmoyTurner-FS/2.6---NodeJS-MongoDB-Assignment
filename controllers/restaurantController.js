@@ -2,16 +2,14 @@ const Restaurant = require("../models/restaurant");
 
 exports.getAllRestaurants = async (req, res) => {
   try {
-    // 1. build base filter object from req.query
     const queryObj = { ...req.query };
-    const excludeFields = ["select", "sort", "page", "limit"];
-    excludeFields.forEach((el) => delete queryObj[el]);
+    ["select", "sort", "page", "limit"].forEach((f) => delete queryObj[f]);
 
-    //filtering: add $ to gt, gte, lt, lte, in
+    // stringify & inject
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(
       /\b(gt|gte|lt|lte|in)\b/g,
-      (match) => `$${match}`
+      (match) => `$$${match}`
     );
     const filters = JSON.parse(queryStr);
 
