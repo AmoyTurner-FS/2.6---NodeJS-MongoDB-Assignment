@@ -1,20 +1,20 @@
 require("dotenv").config();
+// init
 const express = require("express");
-const mongoose = require("mongoose");
-
+const cors = require("cors");
+const connectDB = require("./config/db");
 const restaurantRoutes = require("./routes/restaurants");
 const menuItemRoutes = require("./routes/menu-items");
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("🗄️  Connected to MongoDB"))
-  .catch((err) => console.error("❌ Mongo connection error:", err));
+connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(cors()); // allow cross
 
+// routes
 app.use("/restaurants", restaurantRoutes);
 app.use("/menu-items", menuItemRoutes);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`🚀  Server on port ${port}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server on port ${PORT}`)); // listen
